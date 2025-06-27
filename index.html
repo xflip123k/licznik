@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Formularz z wartościami</title>
+  <style>
+    .counter {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+    }
+    .counter input[type="number"] {
+      width: 60px;
+      text-align: center;
+    }
+    .counter button {
+      width: 30px;
+      height: 30px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Regulowane wartości</h2>
+
+  <form id="myForm">
+    <div class="counter">
+      <label for="value1">Wartość 1:</label>
+      <button type="button" onclick="changeValue('value1', -1)">−</button>
+      <input type="number" id="value1" value="0" onchange="saveCookies()">
+      <button type="button" onclick="changeValue('value1', 1)">+</button>
+    </div>
+
+    <div class="counter">
+      <label for="value2">Wartość 2:</label>
+      <button type="button" onclick="changeValue('value2', -1)">−</button>
+      <input type="number" id="value2" value="0" onchange="saveCookies()">
+      <button type="button" onclick="changeValue('value2', 1)">+</button>
+    </div>
+
+    <button type="submit">Zapisz</button>
+  </form>
+
+  <script>
+    // Ustawia wartość z cookies po załadowaniu strony
+    window.onload = function() {
+      document.getElementById('value1').value = getCookie("value1") || 0;
+      document.getElementById('value2').value = getCookie("value2") || 0;
+    };
+
+    // Zmienia wartość danego pola i zapisuje do cookies
+    function changeValue(id, delta) {
+      const input = document.getElementById(id);
+      input.value = parseInt(input.value || 0) + delta;
+      saveCookies();
+    }
+
+    // Zapisuje wartości do cookies
+    function saveCookies() {
+      setCookie("value1", document.getElementById('value1').value, 30);
+      setCookie("value2", document.getElementById('value2').value, 30);
+    }
+
+    // Ustawia ciasteczko
+    function setCookie(name, value, days) {
+      const d = new Date();
+      d.setTime(d.getTime() + (days*24*60*60*1000));
+      const expires = "expires="+ d.toUTCString();
+      document.cookie = name + "=" + value + ";" + expires + ";path=/";
+    }
+
+    // Pobiera ciasteczko
+    function getCookie(name) {
+      const cname = name + "=";
+      const decodedCookie = decodeURIComponent(document.cookie);
+      const ca = decodedCookie.split(';');
+      for(let i = 0; i < ca.length; i++) {
+        let c = ca[i].trim();
+        if (c.indexOf(cname) == 0) {
+          return c.substring(cname.length, c.length);
+        }
+      }
+      return "";
+    }
+
+    // Zapobiegamy domyślnej akcji formularza
+    document.getElementById("myForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      alert("Wartości zapisane w cookies!");
+    });
+  </script>
+</body>
+</html>
